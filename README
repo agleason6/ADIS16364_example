@@ -1,0 +1,54 @@
+Interfacing ADIS16364 with Arduino
+====================================
+This software package is an example of how to interface an ADIS16364 iSensor with an Arduino Mega 2560.
+
+What you'll need
+----------------
+- Arduino Mega 2560
+- ADIS16364 with breakout board
+- Jumper wires
+- Arduino IDE
+- Python with modules below, I tested this on Python 2.7
+    + pySerial python module, see http://pyserial.sourceforge.net/
+    + NumPy python module, see http://numpy.scipy.org/ 
+    + SciPy python module, see http://www.scipy.org/
+    + matplotlib python module, see http://matplotlib.sourceforge.net/
+
+Connections
+------------
+Using jumper wires, make connections from the ADIS16364 breakout board to the Arduino
+as shown below:
+
+CS   (J1-3)  - to digital pin 53 (SS)
+SCLK (J1-2)  - to digital pin 52 (SCK)
+DOUT (J1-4)  - to digital pin 50 (MISO)
+DIN  (J1-6)  - to digital pin 51 (MOSI)
+VCC  (J1-12) - to 5V
+GND  (J1-9)  - to GND 
+
+See ADIS16364 datasheet Rev D, Figure 18, pg 17 for illustration of J1 and J2 connectors
+
+
+How to use 
+----------
+Once you've installed everything above, and made all the proper connections, it's time to
+program the Arduino. First open up the ADIS164364_example.ino file with the Arduino IDE. 
+Press verify, and upload (after which you have properly setup the IDE with serial port, and device).
+Now close the IDE, because you will probably have issues with the python plotting if you have both 
+programs trying to access the same serial port.
+
+Plotting data with Python
+-------------------------
+Using the script plot_data.py, you have to excecute it with the following command line options:
+
+python plot_data.py -p <port> -r <baud rate>  
+
+I haven't tested this on windows yet, but once I figure it out I will update this.
+
+For example, to run this on linux:
+
+python plot_data.py -p /dev/ttyACM0 -r 115200  
+
+or if you like bar graphs better:
+
+python plot_data.py --bar -p /dev/ttyACM0 -r 115200  
