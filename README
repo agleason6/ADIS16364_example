@@ -32,7 +32,7 @@ See ADIS16364 datasheet Rev D, Figure 18, pg 17 for illustration of J1 and J2 co
 How to use 
 ----------
 Once you've installed everything above, and made all the proper connections, it's time to
-program the Arduino. First open up the ADIS164364_example.ino file with the Arduino IDE. 
+program the Arduino. First open up the ADIS164364.ino file with the Arduino IDE. 
 Press verify, and upload (after which you have properly setup the IDE with serial port, and device).
 Now close the IDE, because you will probably have issues with the python plotting if you have both 
 programs trying to access the same serial port.
