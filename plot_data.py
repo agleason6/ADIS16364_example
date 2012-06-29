@@ -15,6 +15,7 @@
 ########################################################################################################
 
 from numpy import *
+from scipy.interpolate import spline
 import matplotlib.pyplot as pl
 import math
 import serial
@@ -23,15 +24,18 @@ import argparse
 
 # parse arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-p', '--port', required=True, help='Serial port, ie /dev/ttyACMX on Linux, or try just number')
-parser.add_argument('-r', '--rate', required=True, help='Baud rate, default 115200')
-parser.add_argument('-b', '--bar', action='store_true', default=False, help='Show Bargraphs Instead')
+parser.add_argument('-p', '--port', required=True, help='Serial port, ie /dev/ttyACMX on Linux, or COMX on Windows')
+parser.add_argument('-r', '--rate', required=True, help='Baud rate')
+parser.add_argument('-b', '--bar', action='store_true', default=False, help='Show Bargraphs Instead of line plots')
+parser.add_argument('-n', '--num', action='store', default=100, help='Window width, default is 100 points')
+parser.add_argument('-s', '--smooth', action='store_true', default=False, help='Make lines look smoother')
 args = parser.parse_args()
 argz = vars(args)
 bar = argz['bar'] 
 serial_device = argz['port'] 
 baud_rate = argz['rate']
-
+smooth = argz['smooth']
+num_p = int(argz['num'])
 
 # Alows plot to be interactive
 pl.ion()
@@ -39,11 +43,12 @@ pl.ion()
 # Open up serial device 
 ser = serial.Serial(serial_device, baud_rate, timeout=1)
 
-# Intialize 11x100 zero filled data matrix
-data = zeros((11,100));
+# Intialize 11xnum_p zero filled data matrix
+data = zeros((11,num_p));
 
 # intialize t array for plot
-t = linspace(0,100,100) 
+t = linspace(0,num_p,num_p) 
+T = linspace(t.min(),t.max(),num_p*100)
 
 count = 0
 
@@ -81,11 +86,11 @@ while(1):
       except ValueError:
         break
 
-      if(count >= 99):
+      if(count >= num_p - 1):
         # rotate array
         data[i] = roll(data[i],-1)
         data[i][-1] = num
-        count = 99
+        count = num_p - 1 
       else:
         data[i][count] = num 
 
@@ -96,13 +101,19 @@ while(1):
       pl.bar(1,data[2][count], color='g')
       pl.bar(2,data[3][count], color='r')
       pl.axis([0,3,-300,300])
+    elif(smooth):
+      pl.plot(T,spline(t,data[1],T), 'b')
+      pl.plot(T,spline(t,data[2],T), 'g')
+      pl.plot(T,spline(t,data[3],T), 'r')
+      pl.axis([0,num_p,-300,300])
     else:
       pl.plot(t,data[1],'b')
       pl.plot(t,data[2],'g')
       pl.plot(t,data[3],'r')
-      pl.axis([0,100,-300,300])
+      pl.axis([0,num_p,-300,300])
     pl.title('Gyroscope')
     pl.ylabel('deg/s')
+
     # accel
     pl.subplot(212)
     if(bar):
@@ -110,11 +121,16 @@ while(1):
       pl.bar(1,data[5][count], color='g')
       pl.bar(2,data[6][count], color='r')
       pl.axis([0,3,-5000,5000])
+    elif(smooth):
+      pl.plot(T, spline(t,data[4],T), 'b')
+      pl.plot(T, spline(t,data[5],T), 'g')
+      pl.plot(T, spline(t,data[6],T), 'r')
+      pl.axis([0,num_p,-5000,5000])
     else:
       pl.plot(t,data[4],'b')
       pl.plot(t,data[5],'g')
       pl.plot(t,data[6],'r')
-      pl.axis([0,100,-5000,5000])
+      pl.axis([0,num_p,-5000,5000])
     pl.title('Accelerometer')
     pl.ylabel('mg')
 
@@ -122,7 +138,7 @@ while(1):
     pl.draw()
     pl.clf()
     # update count
-    if(count < 100):
+    if(count < num_p):
       count = count + 1
 
 ser.close()

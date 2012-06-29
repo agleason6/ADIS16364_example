@@ -22,18 +22,22 @@
 //  along with Interfacing ADIS16364 with Arduino example.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  NOTES:
-//  This software package is an example of how to interface an ADIS16364 with Arduino Mega 2560.
+//  This software package is an example of how to interface an ADIS16364 with Arduino Uno, or Mega 2560.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "ADIS16364.h"
 #include <SPI.h>
 
 // Instantiate ADIS16364 class as iSensor with CS pin 53
-ADIS16364 iSensor(53);
+// ****Use this for Mega 2560 setup****
+//ADIS16364 iSensor(53);
+
+// Instantiate ADIS16364 class as iSensor with CS pin 10
+ADIS16364 iSensor(10);
 
 void setup (){
   // Start serial
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   delay(100);  
 }
@@ -42,8 +46,8 @@ void loop(){
 
   // Print out debug information
   // ****NOTE****
-  // this will possibly mess up the plotting program if you do this at the same time
-  // so only do it if you don't want to plot data just yet
+  // this will mess up the plotting program if you do this at the same time
+  // so only use it if you want to verify setup before plotting 
   //iSensor.debug();
   
   // If serial has received 
