@@ -212,7 +212,7 @@ void ADIS16364::write(unsigned char reg, unsigned int value){
   delay_cycle();
   // set upper byte
   digitalWrite(CS, LOW);
-  SPI.transfer( (reg + 1) | 0x08 );
+  SPI.transfer( (reg + 1) | 0x80 );
   SPI.transfer( value >> 8 );
   digitalWrite(CS, HIGH);
 }
